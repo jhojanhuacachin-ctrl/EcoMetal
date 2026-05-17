@@ -1,0 +1,16 @@
+EcoMetal - Proyecto final conectado a Google Sheets
+
+Este paquete mantiene el formato del HTML original y deja configurada la URL /exec de Apps Script.
+
+Archivos incluidos:
+- index.html
+- assets/
+- GoogleAppsScript/Code.gs
+- Plantilla_Google_Sheet.csv
+- PASOS_RAPIDOS.txt
+
+Google Sheet:
+https://docs.google.com/spreadsheets/d/1irq8I6rukonbBiKQ1n_rVrhoZ3gko5kWdIa5xyk2r10/edit?usp=sharing
+
+Apps Script:
+https://script.google.com/a/macros/tecsup.edu.pe/s/AKfycbySYvGc3Bz9OZj9I2i23OZrXsI9tvbY7c9Bm90EYVyk6aVbKF7CFy9i1aXIxYaanUmM/exec
