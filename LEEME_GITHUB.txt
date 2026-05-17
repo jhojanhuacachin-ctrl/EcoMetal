@@ -1,0 +1,54 @@
+EcoMetal Web Profesional con Google Sheets - Listo para GitHub Pages
+
+Archivos incluidos:
+- index.html
+- carpeta assets completa
+- GoogleAppsScript/Code.gs
+- Plantilla_Google_Sheet.csv
+
+IMPORTANTE:
+El diseno visual del HTML se mantiene. Solo se agrego la conexion del formulario con Google Sheets y el campo Telefono / Celular.
+
+PASO 1: Google Sheet configurado
+Ya se uso este Google Sheet:
+https://docs.google.com/spreadsheets/d/1irq8I6rukonbBiKQ1n_rVrhoZ3gko5kWdIa5xyk2r10/edit?usp=sharing
+
+PASO 2: Crear el Apps Script
+1. En el Google Sheet, entra a Extensiones > Apps Script.
+2. Borra el codigo inicial.
+3. Copia todo el contenido de GoogleAppsScript/Code.gs.
+4. El ID de tu Google Sheet ya esta colocado en el archivo Code.gs:
+   1irq8I6rukonbBiKQ1n_rVrhoZ3gko5kWdIa5xyk2r10
+5. Guarda el proyecto.
+
+PASO 3: Publicar Apps Script como aplicacion web
+1. Clic en Implementar > Nueva implementacion.
+2. Selecciona tipo: Aplicacion web.
+3. Ejecutar como: Yo.
+4. Quien tiene acceso: Cualquiera.
+5. Clic en Implementar.
+6. Autoriza los permisos.
+7. Copia la URL de la aplicacion web. Debe terminar en /exec.
+
+PASO 4: Conectar index.html
+1. Abre index.html.
+2. Busca esta linea:
+   const GOOGLE_SCRIPT_URL = "PEGA_AQUI_TU_URL_DE_APPS_SCRIPT";
+3. Reemplaza el texto por tu URL real de Apps Script.
+
+PASO 5: Subir a GitHub Pages
+Sube estos archivos a GitHub:
+- index.html
+- carpeta assets completa
+- opcionalmente GoogleAppsScript y este LEEME para respaldo
+
+No subas solamente index.html, porque los GIFs estan dentro de assets.
+
+Columnas que se guardan en Google Sheets:
+- Fecha y hora
+- Nombre y Apellido
+- Correo Electronico
+- Telefono / Celular
+- Asunto
+- Mensaje
+- Pagina
