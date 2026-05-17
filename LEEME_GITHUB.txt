@@ -1,7 +1,0 @@
-EcoMetal Web Profesional con GIFs - Listo para GitHub Pages
-
-Sube estos archivos a GitHub:
-- index.html
-- carpeta assets completa
-
-No subas solamente index.html, porque los GIFs estan dentro de assets.
