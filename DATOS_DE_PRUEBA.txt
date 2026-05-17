@@ -1,0 +1,6 @@
+Datos para probar el formulario:
+Nombre y Apellido: Maria Lopez
+Correo Electronico: maria@correo.com
+Telefono / Celular: 987654321
+Asunto: Recojo de placas
+Mensaje: Deseo coordinar un recojo de residuos electronicos.

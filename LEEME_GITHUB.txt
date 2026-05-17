@@ -1,16 +1,17 @@
-EcoMetal - Proyecto final conectado a Google Sheets
+EcoMetal - Version completa corregida
 
-Este paquete mantiene el formato del HTML original y deja configurada la URL /exec de Apps Script.
+Archivo principal:
+index.html
 
-Archivos incluidos:
-- index.html
-- assets/
-- GoogleAppsScript/Code.gs
-- Plantilla_Google_Sheet.csv
-- PASOS_RAPIDOS.txt
+Carpeta de imagenes:
+assets/
+
+Codigo de Google Apps Script:
+GoogleAppsScript/Code.gs
 
 Google Sheet:
 https://docs.google.com/spreadsheets/d/1irq8I6rukonbBiKQ1n_rVrhoZ3gko5kWdIa5xyk2r10/edit?usp=sharing
 
-Apps Script:
-https://script.google.com/a/macros/tecsup.edu.pe/s/AKfycbySYvGc3Bz9OZj9I2i23OZrXsI9tvbY7c9Bm90EYVyk6aVbKF7CFy9i1aXIxYaanUmM/exec
+Esta version corrige el envio del formulario para que los campos:
+nombre, correo, telefono, asunto y mensaje
+se guarden en la pestaña Respuestas.

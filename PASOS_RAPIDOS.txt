@@ -1,0 +1,39 @@
+ECOMETAL COMPLETO CORREGIDO
+
+Este paquete ya tiene:
+- index.html con la URL /exec pegada.
+- GoogleAppsScript/Code.gs con el ID del Google Sheet.
+- Campo Telefono / Celular.
+- Envio corregido con URLSearchParams.
+
+GOOGLE SHEET:
+https://docs.google.com/spreadsheets/d/1irq8I6rukonbBiKQ1n_rVrhoZ3gko5kWdIa5xyk2r10/edit?usp=sharing
+
+URL /EXEC CONFIGURADA EN INDEX.HTML:
+https://script.google.com/a/macros/tecsup.edu.pe/s/AKfycbySYvGc3Bz9OZj9I2i23OZrXsI9tvbY7c9Bm90EYVyk6aVbKF7CFy9i1aXIxYaanUmM/exec
+
+PASO IMPORTANTE:
+Si cambiaste el codigo en Apps Script, debes actualizar la implementacion:
+Implementar > Administrar implementaciones > Editar > Nueva version > Implementar.
+
+CONFIGURACION CORRECTA EN APPS SCRIPT:
+- Ejecutar como: Yo
+- Acceso: Cualquier usuario
+
+PRUEBA:
+1. En Apps Script, ejecuta la funcion pruebaManual.
+2. Revisa la pestaña Respuestas.
+3. Debe aparecer:
+   Juan Prueba | juan@prueba.com | 999999999
+
+USO FINAL:
+1. Sube index.html y la carpeta assets a tu hosting o GitHub Pages.
+2. Abre la web.
+3. Llena el formulario.
+4. Presiona Enviar Formulario.
+5. Revisa la pestaña Respuestas del Google Sheet.
+
+SI APARECE LA PESTAÑA PERO NO DATOS:
+- Copia nuevamente GoogleAppsScript/Code.gs en Apps Script.
+- Actualiza la implementacion con Nueva version.
+- Verifica que uses el index.html de este ZIP.
