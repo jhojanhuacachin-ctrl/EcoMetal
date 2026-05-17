@@ -1,0 +1,57 @@
+ECOMETAL - FORMULARIO CON GOOGLE SHEETS
+
+Google Sheet usado:
+https://docs.google.com/spreadsheets/d/1irq8I6rukonbBiKQ1n_rVrhoZ3gko5kWdIa5xyk2r10/edit?usp=sharing
+
+ID colocado en GoogleAppsScript/Code.gs:
+1irq8I6rukonbBiKQ1n_rVrhoZ3gko5kWdIa5xyk2r10
+
+PASOS:
+
+1. Abre tu Google Sheet:
+   https://docs.google.com/spreadsheets/d/1irq8I6rukonbBiKQ1n_rVrhoZ3gko5kWdIa5xyk2r10/edit?usp=sharing
+
+2. Entra a:
+   Extensiones > Apps Script
+
+3. Borra cualquier codigo que aparezca y pega TODO el contenido de:
+   GoogleAppsScript/Code.gs
+
+4. Guarda el proyecto.
+
+5. Haz clic en:
+   Implementar > Nueva implementacion
+
+6. En "Tipo", elige:
+   Aplicacion web
+
+7. Configura:
+   Ejecutar como: Yo
+   Quien tiene acceso: Cualquier usuario
+
+8. Haz clic en:
+   Implementar
+
+9. Autoriza los permisos.
+
+10. Copia la URL que termina en:
+    /exec
+
+    Ejemplo:
+    https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxxxxxx/exec
+
+11. Abre index.html y reemplaza esta linea:
+
+    const GOOGLE_SCRIPT_URL = "PEGA_AQUI_TU_URL_DE_APPS_SCRIPT_EXEC";
+
+    por:
+
+    const GOOGLE_SCRIPT_URL = "TU_URL_EXEC";
+
+IMPORTANTE:
+El enlace del Google Sheet NO se pega en index.html.
+El enlace del Google Sheet ya esta dentro de Code.gs.
+En index.html va la URL de Apps Script que termina en /exec.
+
+COLUMNAS QUE SE GUARDAN:
+Fecha y hora | Nombre y Apellido | Correo Electronico | Telefono / Celular | Asunto | Mensaje | Pagina
