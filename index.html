@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoMetal | Web profesional con IA Search y Rastreo Temu</title>
+  <style>
+    :root{
+      --bg:#020b08;
+      --line:rgba(255,255,255,.14);
+      --muted:#b8c9c0;
+      --green:#3df28c;
+      --cyan:#52d8ff;
+      --orange:#f2a54d;
+      --whatsapp:#25d366;
+      --card-bg:rgba(255,255,255,.055);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at 12% 8%,rgba(61,242,140,.18),transparent 28%),radial-gradient(circle at 92% 10%,rgba(82,216,255,.14),transparent 28%),#020b08;color:#f6fff9;line-height:1.65;overflow-x:hidden}
+    body:before{content:"";position:fixed;inset:0;z-index:-1;opacity:.25;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:46px 46px}
+    .container{width:min(1200px,90vw);margin:auto}.glass{background:linear-gradient(145deg,rgba(255,255,255,.115),rgba(255,255,255,.045));border:1px solid var(--line);border-radius:30px;box-shadow:0 30px 90px rgba(0,0,0,.42);backdrop-filter:blur(14px)}
+    img{width:100%;display:block}a{text-decoration:none;color:inherit}
+    
+    /* NAV & IA SEARCH BAR */
+    .nav{position:fixed;z-index:99;top:18px;left:0;right:0}.nav-box{width:min(1200px,92vw);margin:auto;display:flex;align-items:center;justify-content:space-between;padding:12px;border:1px solid var(--line);border-radius:24px;background:rgba(2,11,8,.82);backdrop-filter:blur(20px);gap:15px;}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:950;flex-shrink:0;}.brand span{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,var(--green),var(--cyan));color:#020b08;font-size:24px}.brand small{display:block;color:var(--muted);font-size:11px;margin-top:-4px}
+    
+    .search-wrapper{display:flex;align-items:center;background:rgba(255,255,255,0.06);border:1px solid var(--line);border-radius:50px;padding:4px 6px;width:100%;max-width:390px;transition:0.3s;}
+    .search-wrapper:focus-within{border-color:var(--green);box-shadow:0 0 15px rgba(61,242,140,0.2);background:rgba(255,255,255,0.1);}
+    .search-wrapper input{flex-grow:1;background:transparent;border:none;outline:none;color:white;padding:8px 14px;font-size:14px;width:100%;}
+    .search-wrapper button{background:linear-gradient(135deg, var(--green), var(--cyan));color:#020b08;border:none;border-radius:50px;padding:8px 18px;cursor:pointer;font-weight:900;font-size:13px;display:flex;align-items:center;gap:5px;transition:0.2s;flex-shrink:0;}
+    .search-wrapper button:hover{transform:scale(1.03);}
+    .links{display:flex;gap:4px;flex-shrink:0;}.links a{padding:10px 11px;border-radius:15px;color:#dceae4;font-weight:900;font-size:13px}
+    .links a:hover{background:rgba(61,242,140,.13);color:var(--green)}
+    
+    /* MODALES GENERALES (IA Y PASOS) */
+    .ai-modal{position:fixed;inset:0;background:rgba(2,11,8,0.9);backdrop-filter:blur(15px);z-index:999;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:0.3s;padding:20px;}
+    .ai-modal.active{opacity:1;pointer-events:auto;}
+    .ai-box{width:100%;max-width:720px;padding:35px;position:relative;border:1px solid rgba(61,242,140,0.3);box-shadow:0 0 50px rgba(61,242,140,0.15);}
+    .ai-close{position:absolute;top:20px;right:20px;background:rgba(255,255,255,0.1);border:none;color:white;width:35px;height:35px;border-radius:50%;cursor:pointer;font-weight:bold;font-size:16px;display:grid;place-items:center;transition:0.2s;}
+    .ai-close:hover{background:rgba(255,255,255,0.2);color:var(--orange);}
+    .ai-header{display:flex;align-items:center;gap:10px;margin-bottom:20px;color:var(--green);font-weight:900;font-size:14px;letter-spacing:1px;text-transform:uppercase;}
+    .ai-query-title{font-size:22px;margin-bottom:15px;color:white;font-weight:900;}
+    .ai-response-text{color:#dceae4;font-size:16px;line-height:1.6;margin-bottom:25px;min-height:60px;}
+    
+    .ai-image-container{background:rgba(0,0,0,0.4);border-radius:20px;border:1px dashed rgba(255,255,255,0.15);padding:15px;text-align:center;position:relative;overflow:hidden;}
+    .ai-image-container img{max-height:220px;object-fit:contain;margin:0 auto;border-radius:12px;display:none;}
+    .ai-image-container.loaded img{display:block;}
+    .ai-loader-ui{display:flex;flex-direction:column;align-items:center;gap:12px;padding:40px 0;}
+    .ai-image-container.loaded .ai-loader-ui{display:none;}
+    .spinner{width:40px;height:40px;border:4px solid rgba(61,242,140,0.1);border-top-color:var(--green);border-radius:50%;animation:spin 1s linear infinite;}
+    .ai-img-tag{position:absolute;bottom:10px;right:10px;background:rgba(2,11,8,0.7);padding:4px 10px;border-radius:30px;font-size:11px;font-weight:bold;color:var(--cyan);border:1px solid rgba(82,216,255,0.2);}
+
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* BOTÓN FLOTANTE DE WHATSAPP */
+    .btn-whatsapp-float {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background-color: var(--whatsapp);
+      color: white;
+      border-radius: 50px;
+      padding: 12px 22px;
+      font-size: 15px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 30px rgba(37, 211, 102, 0.4);
+      z-index: 98;
+      transition: 0.3s ease;
+      text-decoration: none;
+    }
+    .btn-whatsapp-float:hover {
+      transform: translateY(-5px) scale(1.03);
+      box-shadow: 0 12px 35px rgba(37, 211, 102, 0.6);
+      background-color: #20ba59;
+    }
+    .btn-whatsapp-float svg { width: 24px; height: 24px; fill: currentColor; }
+
+    /* HERO Y SECCIONES */
+    .hero{min-height:100vh;display:grid;align-items:center;padding:150px 0 70px}.hero-grid{display:grid;grid-template-columns:.95fr 1.05fr;gap:44px;align-items:center}.pill{display:inline-flex;padding:10px 15px;border-radius:999px;border:1px solid rgba(61,242,140,.35);background:rgba(61,242,140,.12);color:#b9ffd6;font-size:13px;font-weight:950;margin-bottom:20px}
+    h1{font-size:clamp(42px,6.7vw,84px);line-height:.94;letter-spacing:-3px;margin-bottom:22px}.accent{color:var(--green)}.lead{font-size:19px;color:#c7d7d0;max-width:720px}.actions{display:flex;flex-wrap:wrap;gap:13px;margin-top:30px}.btn{display:inline-flex;padding:15px 20px;border-radius:18px;font-weight:950;cursor:pointer;border:none;transition: 0.3s;}.btn-primary{background:linear-gradient(135deg,var(--green),var(--cyan));color:#020b08}.btn-secondary{background:rgba(255,255,255,.08);border:1px solid var(--line);color:white}
+    .hero-media{position:relative;padding:16px}.hero-media img{border-radius:23px;min-height:380px;object-fit:cover}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:34px}.stat{padding:18px;border-radius:22px;background:var(--card-bg);border:1px solid rgba(255,255,255,.09)}.stat b{font-size:28px;color:var(--green)}.stat span{display:block;color:var(--muted);font-size:12px;font-weight:900}
+    section{padding:90px 0}.head{max-width:820px;margin-bottom:38px}.eyebrow{color:var(--green);letter-spacing:3px;text-transform:uppercase;font-size:12px;font-weight:950;margin-bottom:10px}h2{font-size:clamp(33px,4.5vw,60px);line-height:1;letter-spacing:-2px;margin-bottom:16px}h3{font-size:20px;line-height:1.2;margin-bottom:10px;font-weight:900;}p{color:var(--muted);font-size:15px}.wide{font-size:18px}
+    .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}.card{overflow:hidden;transition:.28s;border-radius:30px;}.card:hover{transform:translateY(-8px)}.card img{height:260px;object-fit:cover;border-radius:30px 30px 0 0}.content{padding:24px}
+    .tag{display:inline-block;padding:7px 11px;border-radius:999px;background:rgba(61,242,140,.14);color:var(--green);font-size:12px;font-weight:950;margin-bottom:12px}.orange{background:rgba(242,165,77,.14);color:var(--orange)}.cyan{background:rgba(82,216,255,.14);color:var(--cyan)}
+    
+    /* 📦 SECCIÓN DE RASTREO ESTILO TEMU */
+    .tracking-search-box { padding: 30px; border-radius: 24px; margin-bottom: 30px; display: flex; gap: 15px; align-items: center; background: rgba(255,255,255,0.04); border: 1px solid var(--line); }
+    .tracking-search-box input { flex-grow: 1; padding: 16px 20px; border-radius: 15px; background: rgba(0,0,0,0.3); border: 1px solid var(--line); color: white; font-size: 16px; outline: none; }
+    .tracking-search-box input:focus { border-color: var(--cyan); }
+    .tracking-display-panel { display: none; padding: 40px; border-radius: 30px; background: rgba(255,255,255,0.03); border: 1px solid rgba(82,216,255,0.2); }
+    .tracking-display-panel.active { display: block; }
+    
+    /* Barra de progreso visual lineal Temu */
+    .temu-progress-bar-wrapper { display: flex; justify-content: space-between; position: relative; margin: 40px 0; padding: 0 10px; }
+    .temu-progress-line-bg { position: absolute; top: 18px; left: 40px; right: 40px; height: 6px; background: rgba(255,255,255,0.1); z-index: 1; border-radius: 10px; }
+    .temu-progress-line-fill { position: absolute; top: 18px; left: 40px; height: 6px; background: linear-gradient(90deg, var(--green), var(--cyan)); z-index: 2; border-radius: 10px; width: 0%; transition: width 0.8s ease; }
+    .temu-progress-node { position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; text-align: center; width: 100px; }
+    .temu-node-dot { width: 42px; height: 42px; border-radius: 50px; background: #1a2621; border: 3px solid var(--line); display: grid; place-items: center; font-weight: bold; color: var(--muted); transition: 0.3s; font-size: 14px; }
+    .temu-progress-node.completed .temu-node-dot { background: var(--green); border-color: var(--green); color: #020b08; box-shadow: 0 0 15px rgba(61,242,140,0.4); }
+    .temu-progress-node.current .temu-node-dot { background: var(--cyan); border-color: var(--cyan); color: #020b08; box-shadow: 0 0 15px rgba(82,216,255,0.5); }
+    .temu-node-label { font-size: 13px; font-weight: bold; margin-top: 10px; color: var(--muted); }
+    .temu-progress-node.completed .temu-node-label, .temu-progress-node.current .temu-node-label { color: white; }
+    
+    /* Historial detallado del Rastreador */
+    .tracking-history-list { margin-top: 35px; border-left: 2px dashed rgba(255,255,255,0.15); padding-left: 25px; margin-left: 20px; }
+    .history-item { position: relative; margin-bottom: 25px; opacity: 0.5; }
+    .history-item.active { opacity: 1; }
+    .history-item::before { content: ""; position: absolute; left: -32px; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: var(--line); }
+    .history-item.active::before { background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
+    .history-time { font-size: 12px; color: var(--cyan); font-weight: bold; }
+    .history-title { font-size: 16px; font-weight: bold; color: white; margin: 2px 0; }
+    
+    /* ⚡ SECCIÓN PROCESO CON INTERACTIVIDAD MEJORADA */
+    .timeline{display:grid;grid-template-columns:repeat(5,1fr);gap:20px}.step{padding:25px;border-radius:24px;display:flex;flex-direction:column;justify-content:flex-start;cursor:pointer;transition:0.3s ease-in-out;}
+    .step:hover{transform:translateY(-8px);border-color:var(--green);box-shadow:0 12px 35px rgba(61,242,140,0.2);background:rgba(255,255,255,0.08);}
+    .num{width:56px;height:56px;border-radius:20px;display:grid;place-items:center;background:linear-gradient(135deg,var(--green),var(--cyan));color:#020b08;font-weight:950;font-size:20px;margin-bottom:18px;flex-shrink:0;}
+    
+    /* FORMULARIO */
+    .contact-form { padding: 40px; margin-top: 30px; }
+    .form-group { margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; }
+    .form-group label { font-size: 13px; font-weight: 900; color: var(--green); text-transform: uppercase; }
+    .form-group input, .form-group textarea { background: rgba(255,255,255,0.05); border: 1px solid var(--line); border-radius: 15px; padding: 15px; color: white; outline: none; transition: 0.3s; }
+    .form-group input:focus, .form-group textarea:focus { border-color: var(--green); background: rgba(255,255,255,0.1); }
+    .form-status { display: none; margin-top: 16px; padding: 14px 16px; border-radius: 15px; font-weight: 900; border: 1px solid var(--line); background: rgba(255,255,255,0.06); color: #f6fff9; }
+    .form-status.show { display: block; }
+    .form-status.success { border-color: rgba(61,242,140,.6); background: rgba(61,242,140,.12); color: #b9ffd6; }
+    .form-status.error { border-color: rgba(242,165,77,.75); background: rgba(242,165,77,.14); color: #ffd9b0; }
+    .btn:disabled { opacity: .65; cursor: not-allowed; }
+
+    /* 🛒 FOOTER AVANZADO COMPLETO ESTILO TEMU */
+    .temu-footer { background: #010604; border-top: 1px solid var(--line); padding: 60px 0 30px 0; margin-top: 120px; font-size: 14px; }
+    .temu-footer-grid { display: grid; grid-template-columns: 1.2fr repeat(3, 1fr); gap: 40px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 40px; }
+    .temu-footer-brand h2 { font-size: 26px; font-weight: 950; letter-spacing: -1px; margin-bottom: 12px; color: white; display: flex; align-items: center; gap: 8px; }
+    .temu-footer-brand h2 span { color: var(--green); }
+    .temu-footer-brand p { color: var(--muted); font-size: 14px; margin-bottom: 15px; max-width: 280px; }
+    .temu-footer-col h3 { font-size: 15px; font-weight: bold; color: white; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .temu-footer-col ul { list-style: none; }
+    .temu-footer-col ul li { margin-bottom: 12px; }
+    .temu-footer-col ul li a { color: var(--muted); transition: 0.2s; font-size: 14px; }
+    .temu-footer-col ul li a:hover { color: var(--green); padding-left: 2px; }
+    
+    /* Barra de ventajas y certificaciones */
+    .temu-footer-perks { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; padding: 25px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .perk-item { display: flex; align-items: center; gap: 10px; color: white; font-weight: bold; font-size: 13px; }
+    .perk-item span { width: 32px; height: 32px; border-radius: 50%; background: rgba(61,242,140,0.1); border: 1px solid rgba(61,242,140,0.2); color: var(--green); display: grid; place-items: center; font-size: 14px; }
+    
+    /* Copyright inferior */
+    .temu-footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; padding-top: 25px; color: rgba(184, 201, 192, 0.6); font-size: 12px; }
+    
+    /* RESPONSIVIDAD */
+    @media(max-width:1100px){.nav-box{flex-direction:column;border-radius:20px;padding:15px;gap:10px;}.search-wrapper{max-width:100%; width:100%; margin:8px 0; order:3;}}
+    @media(max-width:980px){.hero-grid{grid-template-columns:1fr}.grid3{grid-template-columns:repeat(2,1fr)}.stats,.timeline{grid-template-columns:repeat(2,1fr)}.temu-progress-bar-wrapper{overflow-x:auto; padding-bottom:15px;}.temu-progress-line-bg, .temu-progress-line-fill{display:none;}.temu-footer-grid{grid-template-columns:repeat(2, 1fr); gap:30px;}}
+    @media(max-width:700px){.links{display:none}.hero{padding-top:230px}.stats,.grid3,.timeline{grid-template-columns:1fr}h1{letter-spacing:-1.5px}.btn-whatsapp-float{bottom:15px; right:15px; padding:10px 16px; font-size:13px;}.tracking-search-box{flex-direction:column;}.tracking-search-box button{width:100%;}.temu-footer-grid{grid-template-columns:1fr; gap:25px;}.temu-footer-perks, .temu-footer-bottom{flex-direction:column; align-items:flex-start; gap:15px;}}
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="nav-box">
+      <a href="#inicio" class="brand"><span>♻</span><b>EcoMetal<small>plataforma inteligente circular</small></b></a>
+      
+      <div class="search-wrapper">
+        <input type="text" id="aiSearchInput" placeholder="Pregúntale a la IA (Ej: oro, plomo, cobre)..." onkeyup="if(event.key === 'Enter') consultarEcoMetalAI()">
+        <button onclick="consultarEcoMetalAI()">✨ IA Search</button>
+      </div>
+
+      <div class="links">
+        <a href="#inicio">Inicio</a>
+        <a href="#gifs">Galería</a>
+        <a href="#materiales">Materiales</a>
+        <a href="#rastreo">Rastrear Pedido</a>
+        <a href="#proceso">Proceso</a>
+        <a href="#contacto">Contacto</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="ai-modal" id="aiModal">
+    <div class="ai-box glass">
+      <button class="ai-close" onclick="cerrarAIModal()">✕</button>
+      <div class="ai-header">
+        <span class="spinner" style="width:16px; height:16px; border-width:2px; display:inline-block; vertical-align:middle; margin-right:5px;"></span>
+        Respuesta de EcoMetal AI Overview ✨
+      </div>
+      <div class="ai-query-title" id="aiQueryTitle">"Consulta"</div>
+      <div class="ai-response-text" id="aiResponseText">Procesando consulta...</div>
+      
+      <div class="ai-image-container" id="aiImageContainer">
+        <div class="ai-loader-ui">
+          <div class="spinner"></div>
+          <p style="font-size:13px; color:var(--cyan); font-weight:bold;">Generando recurso visual con IA...</p>
+        </div>
+        <img id="aiGeneratedImg" src="" alt="Imagen generada por IA">
+        <div class="ai-img-tag">✨ Eco-Image Engine</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ai-modal" id="stepModal">
+    <div class="ai-box glass" style="border-color: var(--cyan); box-shadow: 0 0 50px rgba(82,216,255,0.15);">
+      <button class="ai-close" onclick="cerrarStepModal()">✕</button>
+      <div class="ai-header" style="color:var(--cyan);">
+        ⚙ FASE DE OPERACIÓN ECO-EFICIENTE
+      </div>
+      <div class="ai-query-title" id="stepModalTitle">Nombre del Paso</div>
+      <div class="ai-response-text" id="stepModalDescription" style="margin-bottom: 25px;">Descripción extendida del proceso.</div>
+      <div style="display:flex; justify-content:flex-end; gap:12px;">
+        <button class="btn btn-secondary" onclick="cerrarStepModal()">Entendido</button>
+        <a id="stepModalActionBtn" class="btn btn-primary" href="#inicio" onclick="cerrarStepModal()">Ir a la Sección correspondiente</a>
+      </div>
+    </div>
+  </div>
+
+  <a href="https://wa.me/51999999999?text=Hola%20EcoMetal,%20deseo%20cotizar%20y%20reciclar%20mis%20residuos%20electrónicos%20y%20metales." class="btn-whatsapp-float" target="_blank" rel="noopener noreferrer">
+    <svg viewBox="0 0 24 24">
+      <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.455L0 24zm6.59-4.846c1.642.974 3.242 1.487 4.73 1.488 5.432 0 9.854-4.41 9.858-9.83.002-2.625-1.012-5.093-2.857-6.94C16.476 1.99 14.015 1.74 11.39 1.74c-5.436 0-9.854 4.41-9.859 9.832-.001 1.555.418 3.076 1.21 4.423l-.979 3.575 3.665-.961zm14.341-7.29c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+    </svg>
+    Cotizar por WhatsApp
+  </a>
+
+  <header class="hero" id="inicio">
+    <div class="container hero-grid">
+      <div class="reveal">
+        <div class="pill">● Plataforma digital con GIFs en movimiento</div>
+        <h1>EcoMetal: reciclaje electrónico con una web <span class="accent">profesional y dinámica</span></h1>
+        <p class="lead">Página web para presentar el servicio digital de EcoMetal, el recojo de residuos electrónicos y la recuperación de materiales valorizables.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="#gifs">Galería animada</a>
+          <a class="btn btn-secondary" href="#rastreo">Rastrear mi pedido</a>
+        </div>
+        <div class="stats">
+          <div class="stat"><b data-count="4">0</b><span>Galería GIFs</span></div>
+          <div class="stat"><b data-count="5">0</b><span>etapas</span></div>
+          <div class="stat"><b data-count="4">0</b><span>materiales</span></div>
+          <div class="stat"><b data-count="100">0</b><span>% circular</span></div>
+        </div>
+      </div>
+      <div class="hero-media glass reveal"><img src="assets/animacion-plataforma.gif" alt="Plataforma EcoMetal"></div>
+    </div>
+  </header>
+
+  <main>
+    <section id="gifs">
+      <div class="container">
+        <div class="head reveal">
+          <div class="eyebrow">Imágenes GIF con movimiento</div>
+          <h2>Galería animada de EcoMetal</h2>
+          <p class="wide">Los GIFs hacen que la web se vea más profesional, moderna y dinámica.</p>
+        </div>
+        <div class="grid3">
+          <article class="card glass reveal"><img src="assets/animacion-plataforma.gif"><div class="content"><span class="tag">Plataforma</span><h3>Atención digital</h3><p>Representa la web y la app donde el usuario solicita información.</p></div></article>
+          <article class="card glass reveal"><img src="assets/animacion-cobre.gif"><div class="content"><span class="tag orange">Cobre</span><h3>Cobre recuperado</h3><p>Material de alto valor presente en cables y conectores eléctricos.</p></div></article>
+          <article class="card glass reveal"><img src="assets/animacion-placas.gif"><div class="content"><span class="tag cyan">Placas</span><h3>Placas electrónicas</h3><p>Componentes con circuitos y materiales recuperables.</p></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="materiales">
+      <div class="container">
+        <div class="head reveal">
+          <div class="eyebrow">Materiales recuperados</div>
+          <h2>Recuperación y valorización</h2>
+        </div>
+        <div class="grid3">
+          <article class="card glass reveal"><img src="assets/animacion-cobre.gif"><div class="content"><h3>Cobre</h3><p>Obtenido de cables y motores.</p></div></article>
+          <article class="card glass reveal"><img src="assets/animacion-placas.gif"><div class="content"><h3>Placas electrónicas</h3><p>Circuitos y conectores recuperables.</p></div></article>
+          <article class="card glass reveal"><img src="assets/animacion-proceso.gif"><div class="content"><h3>Valorización</h3><p>Reingreso al mercado industrial.</p></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="rastreo">
+      <div class="container">
+        <div class="head reveal">
+          <div class="eyebrow">Seguimiento en Vivo</div>
+          <h2>Rastreo de Servicio en Tiempo Real</h2>
+          <p class="wide">Introduce tu código de solicitud para ver el estado del proceso de tu lote electrónico con la barra interactiva al estilo Temu.</p>
+        </div>
+        
+        <div class="tracking-search-box glass reveal">
+          <input type="text" id="trackingInput" placeholder="Ingresa tu código de pedido de prueba (Ej: EM-402, EM-509, EM-911)...">
+          <button class="btn btn-primary" onclick="buscarRastreoTemu()">Rastrear Servicio</button>
+        </div>
+
+        <div class="tracking-display-panel glass" id="trackingPanel">
+          <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:15px; border-bottom:1px solid var(--line); padding-bottom:15px;">
+            <div>
+              <span style="font-size:14px; color:var(--muted)">Código de Pedido:</span>
+              <strong id="lblOrderId" style="color:var(--cyan); font-size:16px; margin-left:5px;">--</strong>
+            </div>
+            <div>
+              <span style="font-size:14px; color:var(--muted)">Cliente/Empresa:</span>
+              <strong id="lblClientName" style="color:white; font-size:16px; margin-left:5px;">--</strong>
+            </div>
+            <div>
+              <span style="font-size:14px; color:var(--muted)">Última Actualización:</span>
+              <strong id="lblStatusText" style="color:var(--green); font-size:16px; margin-left:5px;">--</strong>
+            </div>
+          </div>
+
+          <div class="temu-progress-bar-wrapper">
+            <div class="temu-progress-line-bg"></div>
+            <div class="temu-progress-line-fill" id="temuProgressFill"></div>
+            
+            <div class="temu-progress-node" id="node1"><div class="temu-node-dot">1</div><div class="temu-node-label">Registrado</div></div>
+            <div class="temu-progress-node" id="node2"><div class="temu-node-dot">2</div><div class="temu-node-label">En Ruta</div></div>
+            <div class="temu-progress-node" id="node3"><div class="temu-node-dot">3</div><div class="temu-node-label">Clasificando</div></div>
+            <div class="temu-progress-node" id="node4"><div class="temu-node-dot">4</div><div class="temu-node-label">Procesado</div></div>
+          </div>
+
+          <div class="tracking-history-list" id="trackingHistoryContainer"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="proceso">
+      <div class="container">
+        <div class="head reveal">
+          <div class="eyebrow">Proceso EcoMetal</div>
+          <h2>Del contacto digital al material valorizado</h2>
+          <p style="color:var(--cyan); font-size:14px; font-weight:bold; margin-top:5px;">💡 Haz clic sobre cualquier paso para abrir la ventana de respuesta operativa.</p>
+        </div>
+        <div class="timeline">
+          <article class="step glass reveal" onclick="abrirModalPaso(1)"><div class="num">1</div><h3>Contacto</h3><p>El cliente ingresa a la plataforma web para conocer los servicios de reciclaje y valorización.</p></article>
+          <article class="step glass reveal" onclick="abrirModalPaso(2)"><div class="num">2</div><h3>Solicitud</h3><p>Se registra el tipo de residuo electrónico mediante el formulario digital o el enlace directo.</p></article>
+          <article class="step glass reveal" onclick="abrirModalPaso(3)"><div class="num">3</div><h3>Recojo</h3><p>Se coordina la logística interna para recoger los componentes de forma segura y eficiente.</p></article>
+          <article class="step glass reveal" onclick="abrirModalPaso(4)"><div class="num">4</div><h3>Clasificación</h3><p>Los residuos se desarman y separan técnicamente según el tipo de metal valorizable.</p></article>
+          <article class="step glass reveal" onclick="abrirModalPaso(5)"><div class="num">5</div><h3>Valorización</h3><p>Los materiales recuperados como el cobre o placas se reintroducen en el mercado industrial circular.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="contacto">
+      <div class="container">
+        <div class="head reveal">
+          <div class="eyebrow">Atención al cliente</div>
+          <h2>Formulario de Contacto</h2>
+          <p>Completa tus datos para coordinar un recojo o solicitar información.</p>
+        </div>
+        <div class="contact-form glass reveal">
+          <form id="contactForm" autocomplete="on">
+            <div class="form-group">
+              <label for="nombre">Nombre y Apellido</label>
+              <input id="nombre" name="nombre" type="text" placeholder="Ej. Juan Pérez" required>
+            </div>
+            <div class="form-group">
+              <label for="correo">Correo Electrónico</label>
+              <input id="correo" name="correo" type="email" placeholder="correo@ejemplo.com" required>
+            </div>
+            <div class="form-group">
+              <label for="telefono">Teléfono / Celular</label>
+              <input id="telefono" name="telefono" type="tel" placeholder="Ej. 999 999 999" required>
+            </div>
+            <div class="form-group">
+              <label for="asunto">Asunto</label>
+              <input id="asunto" name="asunto" type="text" placeholder="Ej. Recojo de placas">
+            </div>
+            <div class="form-group">
+              <label for="mensaje">Mensaje</label>
+              <textarea id="mensaje" name="mensaje" rows="5" placeholder="Escribe tu consulta aquí..."></textarea>
+            </div>
+            <button id="submitBtn" type="submit" class="btn btn-primary">Enviar Formulario</button>
+            <div id="formStatus" class="form-status" aria-live="polite"></div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="temu-footer">
+    <div class="container">
+      
+      <div class="temu-footer-grid">
+        <div class="temu-footer-brand">
+          <h2>♻ EcoMetal</h2>
+          <p>Servicio digital líder en reciclaje electrónico, minería urbana limpia y recuperación industrial responsable.</p>
+          <p style="font-size: 12px; color: var(--cyan);">✨ Soluciones Circulares Inteligentes</p>
+        </div>
+        
+        <div class="temu-footer-col">
+          <h3>Servicios</h3>
+          <ul>
+            <li><a href="#materiales">Recuperación de Cobre</a></li>
+            <li><a href="#materiales">Placas Electrónicas</a></li>
+            <li><a href="#proceso">Logística Interna de Recojo</a></li>
+            <li><a href="#materiales">Valorización de Metales</a></li>
+          </ul>
+        </div>
+        
+        <div class="temu-footer-col">
+          <h3>Soporte</h3>
+          <ul>
+            <li><a href="#rastreo">Rastrear mi Solicitud</a></li>
+            <li><a href="#contacto">Atención al Cliente</a></li>
+            <li><a href="https://wa.me/51999999999" target="_blank">Canal de WhatsApp</a></li>
+            <li><a href="#contacto">Formulario de Planta</a></li>
+          </ul>
+        </div>
+
+        <div class="temu-footer-col">
+          <h3>Plataforma</h3>
+          <ul>
+            <li><a href="#inicio">Inicio Digital</a></li>
+            <li><a href="#gifs">Galería en Movimiento</a></li>
+            <li><a href="#proceso">Ecosistema de 5 Pasos</a></li>
+            <li><a href="#rastreo">Historial en Vivo</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="temu-footer-perks">
+        <div class="perk-item"><span>✔</span> Procesos 100% Verificados</div>
+        <div class="perk-item"><span>✦</span> Huella CO₂ Mitigada</div>
+        <div class="perk-item"><span>⚡</span> Respuesta Inmediata por IA</div>
+        <div class="perk-item"><span>🔒</span> Datos Logísticos Seguros</div>
+      </div>
+
+      <div class="temu-footer-bottom">
+        <div>&copy; 2026 EcoMetal. Todos los derechos reservados. Economía Circular y Tecnología Sostenible.</div>
+        <div style="display:flex; gap:15px;">
+          <a href="#inicio" style="color:var(--green)">Volver Arriba ↑</a>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <script>
+    // INTERSECTION OBSERVERS ANIMACIONES
+    const els=document.querySelectorAll('.reveal');const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.12});els.forEach(e=>obs.observe(e));
+    const countEls=document.querySelectorAll('[data-count]');let done=false;const co=new IntersectionObserver(es=>{if(done)return;if(es.some(e=>e.isIntersecting)){done=true;countEls.forEach(el=>{const t=+el.dataset.count;let c=0;const s=Math.max(1,Math.ceil(t/40));const timer=setInterval(()=>{c+=s;if(c>=t){c=t;clearInterval(timer)}el.textContent=c},28)})}},{threshold:.25});if(countEls[0])co.observe(countEls[0]);
+
+    // PRECARGA DE GIFs
+    const rutasImagenes = ["assets/animacion-cobre.gif","assets/animacion-placas.gif","assets/animacion-plataforma.gif","assets/animacion-proceso.gif"];
+    rutasImagenes.forEach(ruta => { const imgPrecarga = new Image(); imgPrecarga.src = ruta; });
+
+    // ⚡ CONTROLADOR DING/VENTANA DE RESPUESTA DE LOS PASOS DEL PROCESO
+    function abrirModalPaso(numPaso) {
+      const modal = document.getElementById("stepModal");
+      const title = document.getElementById("stepModalTitle");
+      const desc = document.getElementById("stepModalDescription");
+      const actionBtn = document.getElementById("stepModalActionBtn");
+
+      if (numPaso === 1) {
+        title.textContent = "Fase 1: Contacto y Asesoría Digital";
+        desc.innerHTML = "El ecosistema inicia aquí. Evaluamos tus necesidades a través de la web o mediante nuestro chat automatizado de soporte. Puedes enviar una solicitud en solo un minuto usando el formulario de abajo o escribir directamente al canal prioritario.";
+        actionBtn.href = "#contacto";
+        actionBtn.textContent = "Ir al Formulario de Contacto ↓";
+      } else if (numPaso === 2) {
+        title.textContent = "Fase 2: Registro de Solicitud de RAEE";
+        desc.innerHTML = "Ingresamos las características técnicas de tu lote electrónico en la base de datos de <strong>EcoMetal</strong>. Una vez completado el formulario de contacto, el sistema genera automáticamente las órdenes logísticas internas.";
+        actionBtn.href = "#contacto";
+        actionBtn.textContent = "Iniciar Formulario Ahora ↓";
+      } else if (numPaso === 3) {
+        title.textContent = "Fase 3: Logística Segura y Recojo";
+        desc.innerHTML = "Nuestra flota de transporte especializado recoge los residuos en tu establecimiento cumpliendo estrictas normativas de seguridad ambiental. ¡Puedes ingresar un código de prueba en el panel superior para ver cómo rastreamos los camiones en tiempo real!";
+        actionBtn.href = "#rastreo";
+        actionBtn.textContent = "Ver Rastreador en Vivo 📦";
+      } else if (numPaso === 4) {
+        title.textContent = "Fase 4: Clasificación Técnica y Desarmado";
+        desc.innerHTML = "En la planta de operaciones, separamos minuciosamente los componentes. Desensamblamos carcasas, aislamos cableados y clasificamos las tarjetas lógicas según su nivel de pureza y el tipo de metal valorizable.";
+        actionBtn.href = "#materiales";
+        actionBtn.textContent = "Ver Galería de Clasificación ♻";
+      } else if (numPaso === 5) {
+        title.textContent = "Fase 5: Recuperación y Valorización Sostenible";
+        desc.innerHTML = "¡El ciclo se cierra! Los metales de alto valor como el cobre y circuitos purificados se procesan industrialmente y se reintroducen de manera limpia al mercado, mitigando la huella de carbono y evitando la contaminación minera convencional.";
+        actionBtn.href = "#materiales";
+        actionBtn.textContent = "Ver Materiales Recuperados ↑";
+      }
+
+      modal.classList.add("active");
+    }
+
+    function cerrarStepModal() { document.getElementById("stepModal").classList.remove("active"); }
+
+    // MOTOR DE RASTREO INTERACTIVO ESTILO TEMU
+    const dbRastreo = {
+      "EM-402": {
+        id: "EM-402",
+        cliente: "María López",
+        estado: "Clasificación en Planta",
+        progresoPercent: 66,
+        pasoActual: 3,
+        historial: [
+          { hora: "Hoy - 09:30 AM", titulo: "Lote ingresado a clasificación técnica", desc: "Se está separando el cobre y las placas de circuitos." },
+          { hora: "Ayer - 02:15 PM", titulo: "Recojo completado con éxito", desc: "Nuestra unidad móvil retiró los RAEE de la dirección." },
+          { hora: "18 Mayo - 11:00 AM", titulo: "Solicitud digital aprobada", desc: "El pedido fue validado por la plataforma EcoMetal." }
+        ]
+      },
+      "EM-509": {
+        id: "EM-509",
+        cliente: "Tech Solutions S.A.",
+        estado: "Procesado y Valorizado (¡Completado!)",
+        progresoPercent: 100,
+        pasoActual: 4,
+        historial: [
+          { hora: "Hoy - 07:12 AM", titulo: "Material reintroducido al mercado", desc: "El cobre de alta pureza fue reintroducido a la industria circular." },
+          { hora: "20 Mayo - 04:00 PM", titulo: "Fundición y separación química limpia", desc: "Separación total de metales preciosos (Oro y Plata)." },
+          { hora: "19 Mayo - 08:30 AM", titulo: "Lote recibido en planta principal", desc: "Clasificación completada al 100%." },
+          { hora: "17 Mayo - 03:00 PM", titulo: "Pedido coordinado y registrado", desc: "Ingreso exitoso del formulario web." }
+        ]
+      },
+      "EM-911": {
+        id: "EM-911",
+        cliente: "Almacenes Centrales",
+        estado: "Camión en Ruta de Recojo",
+        progresoPercent: 33,
+        pasoActual: 2,
+        historial: [
+          { hora: "Hace 20 min", titulo: "Unidad logística en camino", desc: "El camión recolector se dirige a tu zona asignada." },
+          { hora: "Hoy - 06:00 AM", titulo: "Ruta de recojo programada", desc: "Se asignó conductor y vehículo recolector de metales." },
+          { hora: "Ayer - 05:40 PM", titulo: "Solicitud recibida en la web", desc: "Registro inicial completado." }
+        ]
+      }
+    };
+
+    function buscarRastreoTemu() {
+      const codigo = document.getElementById("trackingInput").value.trim().toUpperCase();
+      if(!codigo) return alert("Por favor escribe un código de pedido.");
+
+      const panel = document.getElementById("trackingPanel");
+      const pedido = dbRastreo[codigo];
+
+      if(!pedido) {
+        alert("Código no encontrado. Intenta con los de prueba: EM-402, EM-509 o EM-911");
+        panel.classList.remove("active");
+        return;
+      }
+
+      document.getElementById("lblOrderId").textContent = pedido.id;
+      document.getElementById("lblClientName").textContent = pedido.cliente;
+      document.getElementById("lblStatusText").textContent = pedido.estado;
+
+      panel.classList.add("active");
+      setTimeout(() => {
+        document.getElementById("temuProgressFill").style.width = pedido.progresoPercent + "%";
+      }, 100);
+
+      for(let i = 1; i <= 4; i++) {
+        const node = document.getElementById("node" + i);
+        node.classList.remove("completed", "current");
+        if (i < pedido.pasoActual) {
+          node.classList.add("completed");
+        } else if (i === pedido.pasoActual) {
+          node.classList.add("current");
+        }
+      }
+
+      const contenedorHistorial = document.getElementById("trackingHistoryContainer");
+      contenedorHistorial.innerHTML = "";
+      pedido.historial.forEach((ev, index) => {
+        const item = document.createElement("div");
+        item.className = "history-item" + (index === 0 ? " active" : "");
+        item.innerHTML = `
+          <div class="history-time">${ev.hora}</div>
+          <div class="history-title">${ev.titulo}</div>
+          <p style="font-size:14px; color:var(--muted);">${ev.desc}</p>
+        `;
+        contenedorHistorial.appendChild(item);
+      });
+    }
+
+    // MOTOR DE IA BUSCADOR
+    function consultarEcoMetalAI() {
+      const q = document.getElementById("aiSearchInput").value.trim();
+      if(!q) return alert("Por favor escribe una consulta para la IA.");
+
+      const modal = document.getElementById("aiModal");
+      const title = document.getElementById("aiQueryTitle");
+      const textNode = document.getElementById("aiResponseText");
+      const imgContainer = document.getElementById("aiImageContainer");
+      const imgNode = document.getElementById("aiGeneratedImg");
+
+      title.textContent = `"${q}"`;
+      textNode.textContent = "Analizando base de datos ecológica de EcoMetal...";
+      imgContainer.classList.remove("loaded");
+      modal.classList.add("active");
+
+      const queryLower = q.toLowerCase();
+      let respuesta = "";
+      let assetImg = "assets/animacion-proceso.gif"; 
+
+      if (queryLower.includes("oro") || queryLower.includes("plata") || queryLower.includes("precioso")) {
+        respuesta = "El **Oro** y la **Plata** son componentes de altísimo valor que recuperamos de los pines de microprocesadores y conectores a través de la minería urbana limpia.";
+        assetImg = "assets/animacion-placas.gif";
+      } else if (queryLower.includes("cobre") || queryLower.includes("cable") || queryLower.includes("motor")) {
+        respuesta = "El **Cobre** es el metal de mayor volumen recuperado de cables y bobinas, ahorrando el 85% de energía frente a la minería convencional.";
+        assetImg = "assets/animacion-cobre.gif";
+      } else if (queryLower.includes("proceso") || queryLower.includes("recojo") || queryLower.includes("rastre")) {
+        respuesta = "Nuestro proceso cuenta con un rastreador interactivo estilo Temu. Puedes bajar a la sección de **Rastreo de Servicio** e ingresar códigos como **EM-402** para probar el flujo de logística y valorización.";
+        assetImg = "assets/animacion-plataforma.gif";
+      } else {
+        respuesta = `He procesado tu duda sobre "${q}". En EcoMetal gestionamos residuos electrónicos y metales. Usa el rastreador o el formulario para gestionar un lote de forma inmediata.`;
+        assetImg = "assets/animacion-proceso.gif";
+      }
+
+      setTimeout(() => {
+        textNode.innerHTML = respuesta.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        imgNode.src = assetImg;
+        imgContainer.classList.add("loaded");
+      }, 300); 
+    }
+
+    function cerrarAIModal() { document.getElementById("aiModal").classList.remove("active"); }
+
+    // ENVÍO DE FORMULARIO A GOOGLE SHEETS
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/a/macros/tecsup.edu.pe/s/AKfycbySYvGc3Bz9OZj9I2i23OZrXsI9tvbY7c9Bm90EYVyk6aVbKF7CFy9i1aXIxYaanUmM/exec";
+    const contactForm = document.getElementById("contactForm");
+    const submitBtn = document.getElementById("submitBtn");
+    const formStatus = document.getElementById("formStatus");
+
+    function showStatus(message, type) {
+      formStatus.textContent = message;
+      formStatus.className = "form-status show" + (type ? " " + type : "");
+    }
+
+    if (contactForm) {
+      contactForm.addEventListener("submit", async function(event) {
+        event.preventDefault();
+        const originalText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Enviando...";
+        showStatus("Enviando datos a Google Sheets...", "");
+
+        const params = new URLSearchParams();
+        params.append("nombre", document.getElementById("nombre").value.trim());
+        params.append("correo", document.getElementById("correo").value.trim());
+        params.append("telefono", document.getElementById("telefono").value.trim());
+        params.append("asunto", document.getElementById("asunto").value.trim());
+        params.append("mensaje", document.getElementById("mensaje").value.trim());
+        params.append("pagina", "EcoMetal");
+
+        try {
+          await fetch(GOOGLE_SCRIPT_URL, { method: "POST", mode: "no-cors", body: params });
+          contactForm.reset();
+          showStatus("Formulario enviado correctamente. Revisa tu hoja de cálculo.", "success");
+        } catch (error) {
+          showStatus("Error al enviar el formulario.", "error");
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+        }
+      });
+    }
+  </script>
+</body>
+</html>
